@@ -3,6 +3,7 @@ const baseUrl = 'https://www.analytics-toolkit.com/tools/testhub/ajax/dbTestData
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   const untilBatchId = parseInt(request.untilBatchId, 10);
+  const maxBatchId = parseInt(request.maxBatchId, 10);
 
   // Extract the current testId from the URL of the page the user is visiting
   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -16,8 +17,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
       chrome.cookies.get({url: 'https://www.analytics-toolkit.com', name: 'PHPSESSID'}, function(cookie) {
         const phpSessionId = cookie.value;
 
-        // Delete datapulls for each batchId from the current batchId down to the untilBatchId
-        for (let batchId = 6; batchId >= untilBatchId; batchId--) { // Assuming the current batchId is 9
+        // Delete datapulls for each batchId from the maxBatchId down to the untilBatchId
+        for (let batchId = maxBatchId; batchId >= untilBatchId; batchId--) {
           // Construct the URL for the deletion operation
           const url = baseUrl + currentTestId + '&batchId=' + batchId;
 
