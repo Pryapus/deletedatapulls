@@ -23,27 +23,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           const url = baseUrl + currentTestId + '&batchId=' + batchId;
 
           // Perform the deletion operation
-          const xhr = new XMLHttpRequest();
-          xhr.open('GET', url, true);
-          xhr.setRequestHeader('authority', 'www.analytics-toolkit.com');
-          xhr.setRequestHeader('accept', '*/*');
-          xhr.setRequestHeader('accept-language', 'en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7');
-          xhr.setRequestHeader('Cookie', 'PHPSESSID=' + phpSessionId);
-          // Add other headers as necessary
-
-          // Add event listeners for the load and error events
-          xhr.addEventListener('load', function() {
-            if (xhr.status >= 200 && xhr.status < 300) {
-              console.log('Response:', xhr.responseText);
-            } else {
-              console.log('Error:', xhr.statusText);
+          fetch(url, {
+            method: 'GET',
+            headers: {
+              'authority': 'www.analytics-toolkit.com',
+              'accept': '*/*',
+              'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8,de;q=0.7',
+              'Cookie': 'PHPSESSID=' + phpSessionId
+              // Add other headers as necessary
             }
-          });
-          xhr.addEventListener('error', function() {
-            console.log('Network error');
-          });
-
-          xhr.send();
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.text();
+          })
+          .then(text => console.log('Response:', text))
+          .catch(error => console.log('Error:', error));
         }
       });
     } else {
